@@ -1,0 +1,8 @@
+{
+    "tokenid":"insert",
+    "botprefix":"s!",
+    "refreshTokenList":60000,
+    "cooldownMessage":4000,
+    "sendWelcomeDM":"True",
+    "snowballServerID":"812557591917887508"
+}
