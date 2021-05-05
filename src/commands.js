@@ -2,7 +2,6 @@ const { checkCooldown, makeEmbed, filterToken, formatFloat } = require('./utils.
 const { CommandRunner } = require('./objects.js');
 const { getAVAXValue } = require('./graph.js');
 const { getMessage, Constants, commandList } = require('./resources.js');
-const lodash = require('lodash');
 
 
 function runCommand(command, msg, settings) {
@@ -38,19 +37,21 @@ function commandInfo(command, msg) {
         let tokenPrice = (getAVAXValue() * filteredResult[0].derivedETH);
         let tokenVolume = (filteredResult[0].tradeVolume * tokenPrice).toFixed(2);
         let tokenLiquidity = (filteredResult[0].totalLiquidity * tokenPrice).toFixed(2);
+        let totalMcap = (Constants.SNOBMaxSupply*tokenPrice).toFixed(2)
         runInfo = new CommandRunner(msg);
         //let recentValues = getSnowballRecent();
         let embedObject = {
             Title: 'Snowball Status Information',
             Color: Constants.snowballColor,
             Description: 'This is the stats for **Snowball**:\n\n' +
+                `\`$SNOB\` Token (Pangolin Data):\n` +
+                `**Price:** $${formatFloat(tokenPrice)}\n` +
+                `**Fully Diluted Mcap:** $${totalMcap}\n` +
+                `**Total Volume:** $${tokenVolume}\n` +
+                `**Total Liquidity:** $${tokenLiquidity}\n\n`+
                 `**Total Value Locked SnowGlobes:** TBD\n` +
                 `**Total Value Locked StableVault:** TBD\n` +
-                `**Total Value Locked IceQueen:** TBD\n\n` +
-                `\`$SNOB\` Token:\n` +
-                `**Price:** $${formatFloat(tokenPrice)}\n` +
-                `**Total Volume:** $${tokenVolume}\n` +
-                `**Total Liquidity:** $${tokenLiquidity}\n\n`,
+                `**Total Value Locked IceQueen:** TBD\n\n`,
             Thumbnail: Constants.snowballLogo
         };
         runInfo.embed = embedObject;
