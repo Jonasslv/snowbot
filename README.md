@@ -1,0 +1,2 @@
+# snowbot
+Snowball Discord Bot
