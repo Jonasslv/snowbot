@@ -6,7 +6,8 @@ const { getAVAXValue, getTokenList } = require('./graph.js');
 const { filterToken } = require('./utils.js');
 const { Constants } = require('./resources.js');
 
-var individualAPRs = [];
+var iceQueenAPR = [];
+var iceQueenTVL = NaN;
 var type = [];
 
 const avaxTokens = [
@@ -43,8 +44,6 @@ async function generateFarmingPoolsData() {
 
     await loadAvaxChefContract(tokens, prices, SNOB_CHEF, SNOB_CHEF_ADDR, SNOB_CHEF_ABI, rewardTokenTicker,
         "snowball", null, rewardsPerWeek, "pendingSnowball", null, [0]);
-
-    console.log(`loaded`);
 
 }
 
@@ -93,8 +92,8 @@ async function loadAvaxChefContract(tokens, prices, chef, chefAddress, chefAbi, 
     }
 
     const poolPrices = poolInfos.map(poolInfo => poolInfo?.poolToken ? getPoolPrices(tokens, prices, poolInfo.poolToken, "avax") : undefined);
-
-    let aprs = []
+    let tvlicequeen = 0;
+    let aprs = [];
     for (i = 0; i < poolCount; i++) {
         if (poolPrices[i] && poolPrices[i].name){
             let apr = printChefPool(chefAbi, chefAddress, prices, tokens, poolInfos[i], i, poolPrices[i],
@@ -102,14 +101,20 @@ async function loadAvaxChefContract(tokens, prices, chef, chefAddress, chefAbi, 
                 pendingRewardsFunction, null, null, "avax")
             aprs.push(apr);
             aprs[aprs.length-1].name = poolPrices[i].name;
+            tvlicequeen += apr.totalStakedUsd;
         }
     }
-    individualAPRs = aprs;
+    iceQueenTVL = tvlicequeen;
+    iceQueenAPR = aprs;
     
 }
 
-function getPoolsInfo() {
-    return individualAPRs;
+function geticeQueenInfo() {
+    return iceQueenAPR;
+}
+
+function geticeQueenTVL() {
+    return iceQueenTVL;
 }
 
 async function getAvaxPoolInfo(chefContract, chefAddress, poolIndex, pendingRewardsFunction) {
@@ -134,7 +139,7 @@ async function getAvaxPoolInfo(chefContract, chefAddress, poolIndex, pendingRewa
 }
 
 
-module.exports = { generateFarmingPoolsData, getPoolsInfo };
+module.exports = { generateFarmingPoolsData, geticeQueenInfo,geticeQueenTVL };
 
 function printChefPool(chefAbi, chefAddr, prices, tokens, poolInfo, poolIndex, poolPrices,
     totalAllocPoints, rewardsPerWeek, rewardTokenTicker, rewardTokenAddress,

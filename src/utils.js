@@ -1,13 +1,24 @@
 const { commandList } = require('./resources.js');
 const { MessageEmbed } = require('discord.js');
 const { getTokenList } = require('./graph.js');
+const StringMask = require('string-mask');
 const lodash = require('lodash');
 
 const cooldownSet = new Set();
 
+function prettyFormat(nb){
+    nb = nb *1;
+    nb = nb.toFixed(2);
+    var formatter = new StringMask('#.##0,00', { reverse: true });
+    nb = (nb.toString()).replace(/\D/g, ""); //get rid of the formatting
+    return formatter.apply(nb);
+}
 
-function formatFloat(number){
-    return number > 0.01 ? number.toFixed(2) : number > 0.000001 ? number.toFixed(6) : number.toExponential(6);
+function formatCurrency(nb){
+
+    let value = nb > 0.01 ? prettyFormat(nb) : nb > 0.000001 ? number(nb).toFixed(6) : number(nb).toExponential(6);
+    
+    return `$${value}`;
 }
 
 //Function for checking if the command is valid
@@ -105,5 +116,5 @@ module.exports = {
     checkCooldown: checkCooldown,
     makeEmbed: makeEmbed,
     filterToken: filterToken,
-    formatFloat:formatFloat
+    formatCurrency:formatCurrency
 }

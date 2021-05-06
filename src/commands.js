@@ -1,7 +1,9 @@
-const { checkCooldown, makeEmbed, filterToken, formatFloat } = require('./utils.js');
+const { checkCooldown, makeEmbed, filterToken, formatCurrency } = require('./utils.js');
 const { CommandRunner } = require('./objects.js');
 const { getAVAXValue } = require('./graph.js');
+const { geticeQueenInfo, geticeQueenTVL } = require('./abicalls.js');
 const { getMessage, Constants, commandList } = require('./resources.js');
+const lodash = require('lodash');
 
 
 function runCommand(command, msg, settings) {
@@ -18,7 +20,7 @@ function runCommand(command, msg, settings) {
                 commandDev(msg);
                 break;
             case 'icequeen':
-                commandDev(msg);
+                commandIceQueen(command, msg);
                 break;
             case 'info':
                 commandInfo(command, msg);
@@ -26,6 +28,34 @@ function runCommand(command, msg, settings) {
         }
     }
 }
+
+function commandIceQueen(command, msg){
+    runApy = new CommandRunner(msg);
+    let pools = geticeQueenInfo();;
+    pools = lodash.orderBy(pools,["yearlyAPR"], ['desc']);
+    if(pools.length > 0){
+        let strPools = ``;
+        let totalValue = 0;
+        pools.forEach((element) =>{
+            totalValue += Number(element.totalStakedUsd);
+            strPools += `**${element.name}**\n`+
+                        `**TVL:** ${formatCurrency(element.totalStakedUsd)}\n`+
+                        `**APR D**:${element.dailyAPR.toFixed(2)}% **W**:${element.weeklyAPR.toFixed(2)}% **Y**:${element.yearlyAPR.toFixed(2)}%\n\n`
+        });
+        let embedObject = {
+            Title: 'Snowball Top APR List',
+            Color: Constants.snowballColor,
+            Description: '**IceQueen** Farming Pools ordered by APR% :farmer: :woman_farmer: :\n\n' +
+                strPools+
+                `**All Pools Value:** ${formatCurrency(totalValue)}`
+        };
+        runApy.embed = embedObject;
+        runApy.sendMessage();
+    }else{
+        msg.reply('Sorry no data has been found.')
+    }
+}
+
 
 function commandDev(msg){
     msg.reply('Sorry command in development, try again later.')
@@ -37,7 +67,8 @@ function commandInfo(command, msg) {
         let tokenPrice = (getAVAXValue() * filteredResult[0].derivedETH);
         let tokenVolume = (filteredResult[0].tradeVolume * tokenPrice).toFixed(2);
         let tokenLiquidity = (filteredResult[0].totalLiquidity * tokenPrice).toFixed(2);
-        let totalMcap = (Constants.SNOBMaxSupply*tokenPrice).toFixed(2)
+        let totalMcap = (Constants.SNOBMaxSupply*tokenPrice).toFixed(2);
+        let iceQueenTVL = geticeQueenTVL();
         runInfo = new CommandRunner(msg);
         //let recentValues = getSnowballRecent();
         let embedObject = {
@@ -45,13 +76,13 @@ function commandInfo(command, msg) {
             Color: Constants.snowballColor,
             Description: 'This is the stats for **Snowball**:\n\n' +
                 `\`$SNOB\` Token (Pangolin Data):\n` +
-                `**Price:** $${formatFloat(tokenPrice)}\n` +
-                `**Fully Diluted Mcap:** $${totalMcap}\n` +
-                `**Total Volume:** $${tokenVolume}\n` +
-                `**Total Liquidity:** $${tokenLiquidity}\n\n`+
-                `**Total Value Locked SnowGlobes:** TBD\n` +
-                `**Total Value Locked StableVault:** TBD\n` +
-                `**Total Value Locked IceQueen:** TBD\n\n`,
+                `**Price:** ${formatCurrency(tokenPrice)}\n` +
+                `**Fully Diluted Mcap:** ${formatCurrency(totalMcap)}\n` +
+                `**Total Volume:** ${formatCurrency(tokenVolume)}\n` +
+                `**Total Liquidity:** ${formatCurrency(tokenLiquidity)}\n\n`+
+                `**TVL SnowGlobes:** TBD\n` +
+                `**TVL StableVault:** TBD\n` +
+                `**TVL IceQueen:** ${formatCurrency(iceQueenTVL)}\n\n`,
             Thumbnail: Constants.snowballLogo
         };
         runInfo.embed = embedObject;

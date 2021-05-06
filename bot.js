@@ -26,7 +26,7 @@ client.on('ready', async () => {
     console.log('Tokens loaded!');
   });
   setInterval(retrieveAllTokensData, settings.refreshTokenList, client);
-  //setInterval(generateFarmingPoolsData,18000000); //30 minutes to refresh apy to not spam ABI calls
+  setInterval(generateFarmingPoolsData,18000000); //30 minutes to refresh apy to not spam ABI calls
 
 });
 
