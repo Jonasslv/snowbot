@@ -23,7 +23,7 @@ links = '`Information`: \n' +
     'Remember to always bookmark your urls (check for https).\n'+
     '**NEVER send your keys to anyone**.';
 
-    snowball = '**Snowball** is a decentralized protocol on **Avalanche** that launched in March of 2021.'+
+snowball = '**Snowball** is a decentralized protocol on **Avalanche** that launched in March of 2021.'+
     ' We provide auto-compounding services for liquidity pools on **Pangolin** and act as an automated '+
     'market maker (**AMM**) for stable assets. Our goal is to become one of the premier DeFi '+
     'projects on **Avalanche** by offering a diversity of competitive products. Visit our website '+
@@ -48,6 +48,7 @@ module.exports = {
         static pangolinGraphAddress = "https://graph-node.avax.network/subgraphs/name/dasconnor/pangolindex";
         static USDTAVAXPairContract = "0x9ee0a4e21bd333a6bb2ab298194320b8daa26516";
         static DAIAVAXPairContract = "0x17a2e8275792b4616befb02eb9ae699aa0dcb94b";
+        static PNGContract = "0x60781c2586d68229fde47564546784ab3faca982";
         static SNOBMaxSupply = 18000000;
     }
 }

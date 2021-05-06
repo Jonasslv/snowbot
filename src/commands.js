@@ -69,7 +69,7 @@ function runWelcome(settings, member) {
                 Color: Constants.snowballColor,
                 Description: 'Feel free to engage in conversations with our community!\n' +
                     'If you need any additional information use `s!help` here in DM or in #bot-commands!\n\n' +
-                    getMessage('links'),
+                    getMessage('snowball'),
                 Thumbnail: Constants.snowballLogo
             };
             channel.send(makeEmbed(embedObject));

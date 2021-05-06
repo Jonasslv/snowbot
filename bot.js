@@ -3,6 +3,7 @@ const { readFileSync } = require('fs');
 const { checkCommand } = require('./src/utils.js');
 const { retrieveAllTokensData, } = require('./src/graph.js');
 const { runCommand, runWelcome } = require('./src/commands.js');
+const {generateFarmingPoolsData} = require('./src/abicalls.js');
 
 //Create instance of bot.
 const client = new Client();
@@ -20,11 +21,13 @@ client.login(settings.tokenid);
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
   //Create timer to refresh tokens data
-  await retrieveAllTokensData(client);
-  //await generateFarmingPoolsData();
+  retrieveAllTokensData(client).then(async () =>{
+    await generateFarmingPoolsData();
+    console.log('Tokens loaded!');
+  });
   setInterval(retrieveAllTokensData, settings.refreshTokenList, client);
   //setInterval(generateFarmingPoolsData,18000000); //30 minutes to refresh apy to not spam ABI calls
-  console.log('Tokens loaded!');
+
 });
 
 client.on('guildMemberAdd', member => {
