@@ -1,7 +1,7 @@
 const { checkCooldown, makeEmbed, filterToken, formatCurrency } = require('./utils.js');
 const { CommandRunner } = require('./objects.js');
 const { getAVAXValue } = require('./graph.js');
-const { geticeQueenInfo, geticeQueenTVL } = require('./abicalls.js');
+const { geticeQueenInfo, geticeQueenTVL,getSnowglobesPool,getSnowglobesTVL,getSnobCircSupply } = require('./abicalls.js');
 const { getMessage, Constants, commandList } = require('./resources.js');
 const lodash = require('lodash');
 
@@ -14,7 +14,7 @@ function runCommand(command, msg, settings) {
                 commandHelp(command, msg, settings);
                 break;
             case 'snowglobes':
-                commandDev(msg);
+                commandSnowglobes(command,msg);
                 break;
             case 'stablevault':
                 commandDev(msg);
@@ -28,6 +28,35 @@ function runCommand(command, msg, settings) {
         }
     }
 }
+
+function commandSnowglobes(command, msg){
+    runApy = new CommandRunner(msg);
+    let pools = getSnowglobesPool();
+    pools = lodash.orderBy(pools,["yearlyAPY"], ['desc']);
+    if(pools.length > 0){
+        let strPools = ``;
+        let totalValue = 0;
+        pools.forEach((element) =>{
+            totalValue += Number(element.snow_tvl);
+            strPools += `**${element.stakeTokenTicker}**\n`+
+                        `**TVL:** ${formatCurrency(element.snow_tvl)}\n`+
+                        `**APY D**:${element.dailyAPY.toFixed(2)}% **W**:${element.weeklyAPY.toFixed(2)}% **Y**:${element.yearlyAPY.toFixed(2)}%\n\n`
+        });
+        let embedObject = {
+            Title: 'Snowglobes Top APY List',
+            Color: Constants.snowballColor,
+            Description: '**Snowglobes** Farming Pools ordered by APY% :farmer: :woman_farmer: :\n\n' +
+                strPools+
+                `**All Pools Value: ${formatCurrency(totalValue)}**`
+        };
+        runApy.embed = embedObject;
+        runApy.sendMessage();
+    }else{
+        msg.reply('Sorry no data has been found.')
+    }
+}
+
+
 
 function commandIceQueen(command, msg){
     runApy = new CommandRunner(msg);
@@ -67,8 +96,9 @@ function commandInfo(command, msg) {
         let tokenPrice = (getAVAXValue() * filteredResult[0].derivedETH);
         let tokenVolume = (filteredResult[0].tradeVolume * tokenPrice).toFixed(2);
         let tokenLiquidity = (filteredResult[0].totalLiquidity * tokenPrice).toFixed(2);
-        let totalMcap = (Constants.SNOBMaxSupply*tokenPrice).toFixed(2);
+        let totalMcap = (getSnobCircSupply()*tokenPrice).toFixed(2);
         let iceQueenTVL = geticeQueenTVL();
+        let snowGlobesTVL = getSnowglobesTVL();
         runInfo = new CommandRunner(msg);
         //let recentValues = getSnowballRecent();
         let embedObject = {
@@ -77,10 +107,10 @@ function commandInfo(command, msg) {
             Description: 'This is the stats for **Snowball**:\n\n' +
                 `\`$SNOB\` Token (Pangolin Data):\n` +
                 `**Price:** ${formatCurrency(tokenPrice)}\n` +
-                `**Fully Diluted Mcap:** ${formatCurrency(totalMcap)}\n` +
+                `**Circ. Supply Marketcap:** ${formatCurrency(totalMcap)}\n` +
                 `**Total Volume:** ${formatCurrency(tokenVolume)}\n` +
                 `**Total Liquidity:** ${formatCurrency(tokenLiquidity)}\n\n`+
-                `**TVL SnowGlobes:** TBD\n` +
+                `**TVL SnowGlobes:** ${formatCurrency(snowGlobesTVL)}\n` +
                 `**TVL StableVault:** TBD\n` +
                 `**TVL IceQueen:** ${formatCurrency(iceQueenTVL)}\n\n`,
             Thumbnail: Constants.snowballLogo

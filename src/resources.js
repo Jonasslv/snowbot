@@ -49,7 +49,10 @@ module.exports = {
         static USDTAVAXPairContract = "0x9ee0a4e21bd333a6bb2ab298194320b8daa26516";
         static DAIAVAXPairContract = "0x17a2e8275792b4616befb02eb9ae699aa0dcb94b";
         static PNGContract = "0x60781c2586d68229fde47564546784ab3faca982";
+        static SNOBContract = "0xC38f41A296A4493Ff429F1238e030924A1542e50";
         static SNOBMaxSupply = 18000000;
+        static ReinvestsADay = 6;
+        static PerformanceFees = 10;
     }
 }
 

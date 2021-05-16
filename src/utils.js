@@ -6,19 +6,34 @@ const lodash = require('lodash');
 
 const cooldownSet = new Set();
 
-function prettyFormat(nb){
-    nb = nb *1;
+function prettyFormat(nb) {
+    nb = nb * 1;
     nb = nb.toFixed(2);
     var formatter = new StringMask('#.##0,00', { reverse: true });
     nb = (nb.toString()).replace(/\D/g, ""); //get rid of the formatting
     return formatter.apply(nb);
 }
 
-function formatCurrency(nb){
+function formatCurrency(nb) {
 
     let value = nb > 0.01 ? prettyFormat(nb) : nb > 0.000001 ? number(nb).toFixed(6) : number(nb).toExponential(6);
-    
+
     return `$${value}`;
+}
+
+class APYMath {
+    /*
+        dayInterest= interest in %
+        reinvestDay= daily compounds
+        fee= performance fee in %
+    */
+    static APRToAPY(interest, reinvestsPeriod, fee, period = 1) {
+        let reinvests = reinvestsPeriod * period;
+        //takeout performance fee and turn to decimal
+        interest = ((interest) - ((interest / 100) * fee))/100;
+        let APY = (Math.pow((1 + interest / reinvests), reinvests) - 1);
+        return APY*100; //return percentage
+    }
 }
 
 //Function for checking if the command is valid
@@ -63,7 +78,7 @@ function filterToken(args) {
         filteredResult = lodash.filter(list, { "name": args });
     }
     if (filteredResult.length == 0) {
-        filteredResult = lodash.filter(list,function(o) { return o.id.toLowerCase() == args.toLowerCase(); });
+        filteredResult = lodash.filter(list, function (o) { return o.id.toLowerCase() == args.toLowerCase(); });
     }
 
     return filteredResult;
@@ -116,5 +131,6 @@ module.exports = {
     checkCooldown: checkCooldown,
     makeEmbed: makeEmbed,
     filterToken: filterToken,
-    formatCurrency:formatCurrency
+    formatCurrency: formatCurrency,
+    APYMath: APYMath
 }
