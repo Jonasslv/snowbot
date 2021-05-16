@@ -30,9 +30,9 @@ class APYMath {
     static APRToAPY(interest, reinvestsPeriod, fee, period = 1) {
         let reinvests = reinvestsPeriod * period;
         //takeout performance fee and turn to decimal
-        interest = ((interest) - ((interest / 100) * fee))/100;
-        let APY = (Math.pow((1 + interest / reinvests), reinvests) - 1);
-        return APY*100; //return percentage
+        interest = interest/100;
+        let APY = (Math.pow((1 + interest / reinvests), reinvests) - 1)*100;
+        return APY;
     }
 }
 
