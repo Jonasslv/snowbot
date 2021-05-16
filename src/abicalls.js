@@ -64,6 +64,10 @@ async function generateFarmingPoolsData() {
             snowglobeAddress: '0xb21b21E4fA802EE4c158d7cf4bD5416B8035c5e0'    //AVAX-DAI
         },
         {
+            stakingRewardAddress: '0x1F6aCc5F5fE6Af91C1BB3bEbd27f4807a243D935',
+            snowglobeAddress: '0xdf7F15d05d641dF701D961a38d03028e0a26a42D'    //AVAX-UNI
+        },
+        {
             stakingRewardAddress: '0x7ac007afB5d61F48D1E3C8Cc130d4cf6b765000e',
             snowglobeAddress: '0x3815f36C3d60d658797958EAD8778f6500be16Df'   //PNG-ETH 
         },
