@@ -25,12 +25,12 @@ client.on('ready', async () => {
     await generateFarmingPoolsData();
     if(settings.refreshAPY){
       runRefreshAPYStaticChannel(client);
-      setInterval(runRefreshAPYStaticChannel,18000000,client);
+      setInterval(runRefreshAPYStaticChannel,1800000,client);
     }
     console.log('Tokens loaded!');
   });
   setInterval(retrieveAllTokensData, settings.refreshTokenList, client);
-  setInterval(generateFarmingPoolsData,18000000); //30 minutes to refresh apy to not spam ABI calls
+  setInterval(generateFarmingPoolsData,1800000); //30 minutes to refresh apy to not spam ABI calls
 });
 
 client.on('guildMemberAdd', member => {
