@@ -1,6 +1,7 @@
 const { checkCooldown, makeEmbed, filterToken, formatCurrency } = require('./utils.js');
 const { CommandRunner } = require('./objects.js');
 const { getAVAXValue } = require('./graph.js');
+const { readFileSync,writeFileSync } = require('fs');
 const { geticeQueenInfo, geticeQueenTVL,getSnowglobesPool,getSnowglobesTVL,getSnobCircSupply } = require('./abicalls.js');
 const { getMessage, Constants, commandList } = require('./resources.js');
 const lodash = require('lodash');
@@ -29,8 +30,41 @@ function runCommand(command, msg, settings) {
     }
 }
 
-function commandSnowglobes(command, msg){
-    runApy = new CommandRunner(msg);
+async function runRefreshAPYStaticChannel(client){
+    var settings = JSON.parse(readFileSync('./settings.json'));
+    let channelAPY = await client.channels.fetch(settings.channelAPYID);
+    if(!channelAPY){
+        console.log('APY channel not found!');
+        return;
+    }
+    let embedMSGicequeen = makeEmbed(commandIceQueen(null,null,true));
+    let embedMSGsnowglobes = makeEmbed(commandSnowglobes(null,null,true)); 
+    //check if has a message already sent
+    if(settings.msgIDicequeen.length > 0){
+        let msgicequeen = await channelAPY.messages.fetch(settings.msgIDicequeen);   
+        msgicequeen.edit(embedMSGicequeen);
+    }else{
+        channelAPY.send(embedMSGicequeen).then((msg) =>{
+            settings.msgIDicequeen = msg.id;
+            writeFileSync('./settings.json',JSON.stringify(settings));
+        });
+    }
+    //check if has a message already sent
+    if(settings.msgIDsnowglobes.length > 0){
+        let msgsnowglobes = await channelAPY.messages.fetch(settings.msgIDsnowglobes);
+        msgsnowglobes.edit(embedMSGsnowglobes);
+    }else{
+        channelAPY.send(embedMSGsnowglobes).then((msg) =>{
+            settings.msgIDsnowglobes = msg.id;
+            writeFileSync('./settings.json',JSON.stringify(settings));
+        });
+    }
+}
+
+function commandSnowglobes(command, msg, staticMSG = false){
+    if(!staticMSG){
+        runApy = new CommandRunner(msg);
+    }
     let pools = getSnowglobesPool();
     pools = lodash.orderBy(pools,["yearlyAPY"], ['desc']);
     if(pools.length > 0){
@@ -49,19 +83,27 @@ function commandSnowglobes(command, msg){
                 strPools+
                 `**All Pools Value: ${formatCurrency(totalValue)}**`
         };
-        runApy.embed = embedObject;
-        runApy.sendMessage();
+        if(!staticMSG){
+            runApy.embed = embedObject;
+            runApy.sendMessage();
+        }else{
+            return embedObject; 
+        }
     }else{
-        msg.reply('Sorry no data has been found.')
+        if(!staticMSG){
+            msg.reply('Sorry no data has been found.');
+        }
     }
 }
 
 
 
-function commandIceQueen(command, msg){
-    runApy = new CommandRunner(msg);
+function commandIceQueen(command, msg, staticMSG = false){
+    if(!staticMSG){
+        runApy = new CommandRunner(msg);
+    }
     let pools = geticeQueenInfo();;
-    pools = lodash.orderBy(pools,["yearlyAPR"], ['desc']);
+    pools = lodash.orderBy(pools,["snowglobeYAPY"], ['desc']);
     if(pools.length > 0){
         let strPools = ``;
         let totalValue = 0;
@@ -69,19 +111,27 @@ function commandIceQueen(command, msg){
             totalValue += Number(element.totalStakedUsd);
             strPools += `**${element.name}**\n`+
                         `**TVL:** ${formatCurrency(element.totalStakedUsd)}\n`+
-                        `**APR D**:${element.dailyAPR.toFixed(2)}% **W**:${element.weeklyAPR.toFixed(2)}% **Y**:${element.yearlyAPR.toFixed(2)}%\n\n`
+                        (element.name.startsWith('Wrapped') ?
+                          `**APY D**:${element.snowglobeDAPY.toFixed(2)}% **W**:${element.snowglobeWAPY.toFixed(2)}% **Y**:${element.snowglobeYAPY.toFixed(2)}%\n`:'')+
+                        `**SNOB APR D**:${element.dailyAPR.toFixed(2)}% **W**:${element.weeklyAPR.toFixed(2)}% **Y**:${element.yearlyAPR.toFixed(2)}%\n\n`
         });
         let embedObject = {
-            Title: 'Snowball Top APR List',
+            Title: 'IceQueen Top APY List',
             Color: Constants.snowballColor,
-            Description: '**IceQueen** Farming Pools ordered by APR% :farmer: :woman_farmer: :\n\n' +
+            Description: '**IceQueen** Farming Pools ordered by APY% :farmer: :woman_farmer: :\n\n' +
                 strPools+
-                `**All Pools Value:** ${formatCurrency(totalValue)}`
+                `\n**All Pools Value: ${formatCurrency(totalValue)}**`
         };
-        runApy.embed = embedObject;
-        runApy.sendMessage();
+        if(!staticMSG){
+            runApy.embed = embedObject;
+            runApy.sendMessage();
+        }else{
+            return embedObject;
+        }
     }else{
-        msg.reply('Sorry no data has been found.')
+        if(!staticMSG){
+            msg.reply('Sorry no data has been found.');
+        }
     }
 }
 
@@ -110,10 +160,11 @@ function commandInfo(command, msg) {
                 `**Circ. Supply Marketcap:** ${formatCurrency(totalMcap)}\n` +
                 `**Total Volume:** ${formatCurrency(tokenVolume)}\n` +
                 `**Total Liquidity:** ${formatCurrency(tokenLiquidity)}\n\n`+
-                `**TVL SnowGlobes:** ${formatCurrency(snowGlobesTVL)}\n` +
+                `**TVL SnowGlobes:** ${formatCurrency(snowGlobesTVL-iceQueenTVL)}\n` +
                 `**TVL StableVault:** TBD\n` +
                 `**TVL IceQueen:** ${formatCurrency(iceQueenTVL)}\n\n`,
-            Thumbnail: Constants.snowballLogo
+            Thumbnail: Constants.snowballLogo,
+            Footer: `TVL: ${formatCurrency(snowGlobesTVL)}` 
         };
         runInfo.embed = embedObject;
         runInfo.sendMessage();
@@ -206,6 +257,7 @@ function commandHelp(command, msg, settings) {
 
 module.exports = {
     runCommand: runCommand,
-    runWelcome: runWelcome
+    runWelcome: runWelcome,
+    runRefreshAPYStaticChannel:runRefreshAPYStaticChannel
 }
 

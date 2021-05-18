@@ -2,7 +2,7 @@ const { Client } = require('discord.js');
 const { readFileSync } = require('fs');
 const { checkCommand } = require('./src/utils.js');
 const { retrieveAllTokensData, } = require('./src/graph.js');
-const { runCommand, runWelcome } = require('./src/commands.js');
+const { runCommand, runWelcome,runRefreshAPYStaticChannel } = require('./src/commands.js');
 const {generateFarmingPoolsData} = require('./src/abicalls.js');
 
 //Create instance of bot.
@@ -23,11 +23,14 @@ client.on('ready', async () => {
   //Create timer to refresh tokens data
   retrieveAllTokensData(client).then(async () =>{
     await generateFarmingPoolsData();
+    if(settings.refreshAPY){
+      runRefreshAPYStaticChannel(client);
+      setInterval(runRefreshAPYStaticChannel,18000000,client);
+    }
     console.log('Tokens loaded!');
   });
   setInterval(retrieveAllTokensData, settings.refreshTokenList, client);
   setInterval(generateFarmingPoolsData,18000000); //30 minutes to refresh apy to not spam ABI calls
-
 });
 
 client.on('guildMemberAdd', member => {

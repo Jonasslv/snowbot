@@ -1,8 +1,13 @@
 {
-    "tokenid":"insert",
-    "botprefix":"s!",
-    "refreshTokenList":60000,
-    "cooldownMessage":4000,
-    "sendWelcomeDM":"True",
-    "snowballServerID":"812557591917887508"
+    "tokenid": "insert",
+    "botprefix": "s!",
+    "refreshTokenList": 60000,
+    "cooldownMessage": 4000,
+    "sendWelcomeDM": "True",
+    "snowballServerID": "707004932821352488",
+    "dailyCompounds": 6,
+    "refreshAPY": true,
+    "channelAPYID": "844331696210968597",
+    "msgIDsnowglobes": "844346606957363221",
+    "msgIDicequeen": "844346605926219796"
 }

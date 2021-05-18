@@ -127,10 +127,6 @@ async function generateFarmingPoolsData() {
     const rewardsPerWeek = await SNOB_CHEF.snowballPerBlock() / 1e18
         * 604800 / blocksPerSeconds * multiplier;
 
-    await loadAvaxChefContract(tokens, prices, SNOB_CHEF, SNOB_CHEF_ADDR, SNOB_CHEF_ABI, `SNOB`,
-        "snowball", null, rewardsPerWeek, "pendingSnowball", null, [0]);
-
-
     const pools = PngFarmsElegible.map(c => {
         return {
             address: c.stakingRewardAddress,
@@ -143,6 +139,11 @@ async function generateFarmingPoolsData() {
     await loadMultiplePangolinPools(tokens, prices, pools);
 
     await loadSnobSupply();
+
+    
+    await loadAvaxChefContract(tokens, prices, SNOB_CHEF, SNOB_CHEF_ADDR, SNOB_CHEF_ABI, `SNOB`,
+        "snowball", null, rewardsPerWeek, "pendingSnowball", null, [0]);
+
 }
 
 async function loadSnobSupply(){
@@ -309,6 +310,10 @@ async function loadAvaxChefContract(tokens, prices, chef, chefAddress, chefAbi, 
                 pendingRewardsFunction, null, null, "avax")
             aprs.push(apr);
             aprs[aprs.length - 1].name = poolPrices[i].name;
+            let snowglobe = lodash.find(snowglobesAPR,{stakeTokenTicker:poolPrices[i].name.substring('8')});
+            aprs[aprs.length - 1].snowglobeDAPY = snowglobe.dailyAPY; 
+            aprs[aprs.length - 1].snowglobeWAPY = snowglobe.weeklyAPY; 
+            aprs[aprs.length - 1].snowglobeYAPY = snowglobe.yearlyAPY; 
             tvlicequeen += apr.totalStakedUsd;
         }
     }
