@@ -37,10 +37,10 @@ async function runRefreshAPYStaticChannel(client){
         console.log('APY channel not found!');
         return;
     }
-    let embedMSGicequeen = makeEmbed(commandIceQueen(null,null,true));
+    //let embedMSGicequeen = makeEmbed(commandIceQueen(null,null,true));
     let embedMSGsnowglobes = makeEmbed(commandSnowglobes(null,null,true)); 
     //check if has a message already sent
-    if(settings.msgIDicequeen.length > 0){
+    /*if(settings.msgIDicequeen.length > 0){
         let msgicequeen = await channelAPY.messages.fetch(settings.msgIDicequeen);   
         msgicequeen.edit(embedMSGicequeen);
     }else{
@@ -48,7 +48,7 @@ async function runRefreshAPYStaticChannel(client){
             settings.msgIDicequeen = msg.id;
             writeFileSync('./settings.json',JSON.stringify(settings));
         });
-    }
+    }*/
     //check if has a message already sent
     if(settings.msgIDsnowglobes.length > 0){
         let msgsnowglobes = await channelAPY.messages.fetch(settings.msgIDsnowglobes);
