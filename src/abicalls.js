@@ -118,6 +118,14 @@ async function generateFarmingPoolsData() {
         {
             stakingRewardAddress: '0xd3e5538A049FcFcb8dF559B85B352302fEfB8d7C',
             snowglobeAddress: '0x27f8FE86a513bAAF18B59D3dD15218Cc629640Fc'  
+        },
+        {
+            stakingRewardAddress: '0xf2b788085592380bfCAc40Ac5E0d10D9d0b54eEe',
+            snowglobeAddress: '0x888Ab4CB2279bDB1A81c49451581d7c243AffbEf'  
+        },
+        {
+            stakingRewardAddress: '0x759ee0072901f409e4959E00b00a16FD729397eC',
+            snowglobeAddress: '0x8309C64390F376fD778BDd701d54d1F8DFfe1F39'  
         }
     ]
     provider = new ethers.providers.JsonRpcProvider('https://api.avax.network/ext/bc/C/rpc');
