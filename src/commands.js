@@ -74,7 +74,7 @@ function commandSnowglobes(command, msg, staticMSG = false){
             totalValue += Number(element.snow_tvl);
             strPools += `**${element.stakeTokenTicker}**\n`+
                         `**TVL:** ${formatCurrency(element.snow_tvl)}\n`+
-                        `**APY **Y**:${element.yearlyAPY.toFixed(2)}%\n\n`
+                        `**APY Y**:${element.yearlyAPY.toFixed(2)}%\n\n`
         });
         let embedObject = {
             Title: 'Snowglobes Top APY List',
