@@ -52,7 +52,6 @@ async function retrieveAVAXPrice(){
         const USDTQt = reserves._reserve1 /1e6;
         const AVAXQt = reserves._reserve0 /1e18;
         USDTPrice = (USDTQt/AVAXQt);
-        console.log(USDTPrice);
     }
     if(DAIQuery.data.data.pair){
         DAIPrice = DAIQuery.data.data.pair.token1Price; 
@@ -62,7 +61,6 @@ async function retrieveAVAXPrice(){
         const AVAXQt = reserves._reserve0;
         const DAIQt = reserves._reserve1;
         DAIPrice = (DAIQt/AVAXQt);
-        console.log(DAIPrice);
     }
 
     if (USDTQuery.data != undefined && DAIQuery.data != undefined) {
