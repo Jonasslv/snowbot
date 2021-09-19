@@ -88,7 +88,7 @@ async function refreshSNOBData(client) {
   let relevantInformation;
   switch(currentStatus){
     case enumStatus.price:
-      relevantInformation = `$${tokenPrice}`;
+      relevantInformation = `SNOB $${tokenPrice}`;
       currentStatus = enumStatus.mcap;
     break;
     case enumStatus.mcap:
