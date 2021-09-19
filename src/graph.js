@@ -92,19 +92,6 @@ async function retrieveAllTokensData(client) {
 
         //save JSON List
         tokenlist = result.data.data.tokens;
-
-        //update bot presence
-        let filteredResult = lodash.filter(tokenlist, { "symbol": "SNOB" });
-        let orderedResult =  lodash.orderBy(filteredResult,["totalLiquidity", "tradeVolume"], ['desc', 'desc']);
-        let tokenPrice = (getAVAXValue() * orderedResult[0].derivedETH).toFixed(2);
-
-        client.user.setPresence({
-            status: 'online',
-            activity: {
-                name: `SNOB: $${tokenPrice}`,
-                type: "PLAYING"
-            }
-        });
     }
 }
 

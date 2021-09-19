@@ -1,12 +1,19 @@
 const { Client } = require('discord.js');
 const { readFileSync } = require('fs');
 const { checkCommand } = require('./src/utils.js');
-const { retrieveAllTokensData, } = require('./src/graph.js');
-const { runCommand, runWelcome,runRefreshAPYStaticChannel, runHarvesterOutOfGas } = require('./src/commands.js');
-const {generateFarmingPoolsData, checkHarvesterJuice} = require('./src/abicalls.js');
+const { retrieveAllTokensData, getTokenList, getAVAXValue, } = require('./src/graph.js');
+const { runCommand, runWelcome, runRefreshAPYStaticChannel, runHarvesterOutOfGas } = require('./src/commands.js');
+const { generateFarmingPoolsData, checkHarvesterJuice, loadSnobSupply, getSnobCircSupply } = require('./src/abicalls.js');
+const lodash = require('lodash');
 
 //Create instance of bot.
 const client = new Client();
+
+const enumStatus =  Object.freeze({
+  price:0,
+  mcap:1
+});
+var currentStatus = enumStatus.price;
 
 
 //Sync read to wait for settings
@@ -21,18 +28,20 @@ client.login(settings.tokenid);
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
   //Create timer to refresh tokens data
-  retrieveAllTokensData(client).then(async () =>{
+  retrieveAllTokensData(client).then(async () => {
     await refreshHarvester(client);
+    await refreshSNOBData(client);
     await generateFarmingPoolsData();
-    if(settings.refreshAPY){
+    if (settings.refreshAPY) {
       runRefreshAPYStaticChannel(client);
-      setInterval(runRefreshAPYStaticChannel,1800000,client);
+      setInterval(runRefreshAPYStaticChannel, 1800000, client);
     }
     console.log('Tokens loaded!');
   });
   setInterval(retrieveAllTokensData, settings.refreshTokenList, client);
+  setInterval(refreshSNOBData, settings.refreshTokenList+30000, client); //give time to refresh tokendata
   setInterval(refreshHarvester, 28800000, client);
-  setInterval(generateFarmingPoolsData,1800000); //30 minutes to refresh apy to not spam ABI calls
+  setInterval(generateFarmingPoolsData, 1800000); //30 minutes to refresh apy to not spam ABI calls
 });
 
 client.on('guildMemberAdd', member => {
@@ -60,10 +69,37 @@ client.on('message', msg => {
 });
 
 async function refreshHarvester(client) {
- checkHarvesterJuice(client).then(
-  (payload)=>{
-    if(payload.harvestStatus.lowGas){
-      runHarvesterOutOfGas(payload.client,payload.harvestStatus);
+  checkHarvesterJuice(client).then(
+    (payload) => {
+      if (payload.harvestStatus.lowGas) {
+        runHarvesterOutOfGas(payload.client, payload.harvestStatus);
+      }
+    });
+}
+
+async function refreshSNOBData(client) {
+  //update bot presence
+  const snobCircSupply = await loadSnobSupply();
+  const filteredResult = lodash.filter(getTokenList(), { "symbol": "SNOB" });
+  const orderedResult = lodash.orderBy(filteredResult, ["totalLiquidity", "tradeVolume"], ['desc', 'desc']);
+  const tokenPrice = (getAVAXValue() * orderedResult[0].derivedETH).toFixed(2);
+  const mcap = `Circ. Mcap $${((tokenPrice * snobCircSupply)/1_000_000).toFixed(2)}M`;
+
+  let relevantInformation;
+  switch(currentStatus){
+    case enumStatus.price:
+      relevantInformation = `$${tokenPrice}`;
+      currentStatus = enumStatus.mcap;
+    break;
+    case enumStatus.mcap:
+      relevantInformation = mcap;
+      currentStatus = enumStatus.price;
+  }
+  client.user.setPresence({
+    status: 'online',
+    activity: {
+      name: `${relevantInformation}`,
+      type: "PLAYING"
     }
   });
 }

@@ -50,6 +50,7 @@ module.exports = {
         static PNGContract = "0x60781c2586d68229fde47564546784ab3faca982";
         static SNOBContract = "0xC38f41A296A4493Ff429F1238e030924A1542e50";
         static Harvester = "0x096a46142C199C940FfEBf34F0fe2F2d674fDB1F";
+        static SNOWCONEContract = "0x83952E7ab4aca74ca96217D6F8f7591BEaD6D64E";
         static SNOBMaxSupply = 18000000;
         static ReinvestsADay = 6;
         static PerformanceFees = 10;
