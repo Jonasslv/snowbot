@@ -16,7 +16,7 @@ function prettyFormat(nb) {
 
 function formatCurrency(nb) {
 
-    let value = nb > 0.01 ? prettyFormat(nb) : nb > 0.000001 ? number(nb).toFixed(6) : number(nb).toExponential(6);
+    let value = nb > 0.01 ? prettyFormat(nb) : nb > 0.000001 ? Number(nb).toFixed(6) : Number(nb).toExponential(6);
 
     return `$${value}`;
 }

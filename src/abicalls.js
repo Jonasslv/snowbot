@@ -11,7 +11,11 @@ var iceQueenTVL = NaN;
 var type = [];
 var snowglobesAPR = [];
 var snowglobesTVL = NaN;
-var snobCircSupply = 0; 
+var snobCircSupply = 0;
+var harvestStatus = {
+  lowGas:false,
+  AVAXQty:0
+}
 
 const avaxTokens = [
     { "id": "avalanche", "symbol": "AVAX", "contract": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7" },
@@ -28,10 +32,7 @@ const SNOWGLOBE_ABI = [{"type":"constructor","stateMutability":"nonpayable","inp
 
 const SNOB_CHEF_ADDR = "0xB12531a2d758c7a8BF09f44FC88E646E1BF9D375";
 
-var provider = undefined;
-
-
-
+var provider = null;
 
 async function generateFarmingPoolsData() {
     const PngFarmsElegible = [
@@ -350,6 +351,14 @@ function getSnowglobesPool() {
     return snowglobesAPR;
 }
 
+function getHarvestStatus() {
+  return harvestStatus;
+}
+
+
+module.exports = { generateFarmingPoolsData,getSnobCircSupply, geticeQueenInfo, geticeQueenTVL,
+  getSnowglobesPool,getSnowglobesTVL, getHarvestStatus, checkHarvesterJuice };
+
 async function getAvaxPoolInfo(chefContract, chefAddress, poolIndex, pendingRewardsFunction) {
     const poolInfo = await chefContract.poolInfo(poolIndex);
     if (poolInfo.allocPoint == 0) {
@@ -371,8 +380,6 @@ async function getAvaxPoolInfo(chefContract, chefAddress, poolIndex, pendingRewa
     };
 }
 
-
-module.exports = { generateFarmingPoolsData,getSnobCircSupply, geticeQueenInfo, geticeQueenTVL,getSnowglobesPool,getSnowglobesTVL };
 
 function printChefPool(chefAbi, chefAddr, prices, tokens, poolInfo, poolIndex, poolPrices,
     totalAllocPoints, rewardsPerWeek, rewardTokenTicker, rewardTokenAddress,
@@ -682,4 +689,16 @@ const lookUpPrices = async function (id_array) {
         PNGValue = (PNGToken[0].derivedETH * AVAXValue).toFixed(2);
     }
     return { avalanche: { usd: (AVAXValue).toFixed(2) }, pangolin: { usd: PNGValue } };
+}
+
+
+async function checkHarvesterJuice (client) {
+  const provider = new ethers.providers.JsonRpcProvider('https://api.avax.network/ext/bc/C/rpc');
+  const harvesterAVAX = await provider.getBalance(Constants.Harvester)/1e18;
+  harvestStatus.AVAXQty = harvesterAVAX;
+  if(harvesterAVAX < 5){
+    harvestStatus.lowGas = true;
+  }
+  return {harvestStatus,client};
+
 }

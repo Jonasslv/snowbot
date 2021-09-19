@@ -11,14 +11,13 @@ links = '`Information`: \n' +
     '**Documentation**: https://snowballs.gitbook.io/snowball-docs/ \n' +
     '**Medium**: https://medium.com/snowball-finance \n\n' +
     '`App Links`: \n' +
-    '**Stablevault**: https://app.snowball.network/stablevault \n' +
-    '**Snowglobes**: https://app.snowball.network/compound \n' +
-    '**IceQueen**: https://app.snowball.network/earn/ \n\n' +
+    '**Stablevault**: https://beta.snowball.network/s4d-vault \n' +
+    '**Compounding**: https://beta.snowball.network/compound-and-earn \n' +
     '`Community`: \n' +
     '**Discord Group**: https://discord.gg/BqYsZr3AVe \n' +
     '**Telegram**: http://t.me/throwsnowballs \n\n' +
     '`Feed`: \n' +
-    '**Twitter**: https://twitter.com/throwsnowballs \n' +
+    '**Twitter**: https://twitter.com/snowballdefi \n' +
     '**Github**: https://github.com/Snowball-Finance \n\n' +
     'Remember to always bookmark your urls (check for https).\n'+
     '**NEVER send your keys to anyone**.';
@@ -50,6 +49,7 @@ module.exports = {
         static DAIAVAXPairContract = "0xbA09679Ab223C6bdaf44D45Ba2d7279959289AB0";
         static PNGContract = "0x60781c2586d68229fde47564546784ab3faca982";
         static SNOBContract = "0xC38f41A296A4493Ff429F1238e030924A1542e50";
+        static Harvester = "0x096a46142C199C940FfEBf34F0fe2F2d674fDB1F";
         static SNOBMaxSupply = 18000000;
         static ReinvestsADay = 6;
         static PerformanceFees = 10;
