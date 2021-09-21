@@ -11,7 +11,8 @@ const client = new Client();
 
 const enumStatus =  Object.freeze({
   price:0,
-  mcap:1
+  mcap:1,
+  percentLocked:2,
 });
 var currentStatus = enumStatus.price;
 
@@ -79,7 +80,8 @@ async function refreshHarvester(client) {
 
 async function refreshSNOBData(client) {
   //update bot presence
-  const snobCircSupply = await loadSnobSupply();
+  const { snobCircSupply, percentLocked } = await loadSnobSupply();
+  const locked = `${percentLocked.toFixed(1)}% SNOB Locked`;
   const filteredResult = lodash.filter(getTokenList(), { "symbol": "SNOB" });
   const orderedResult = lodash.orderBy(filteredResult, ["totalLiquidity", "tradeVolume"], ['desc', 'desc']);
   const tokenPrice = (getAVAXValue() * orderedResult[0].derivedETH).toFixed(2);
@@ -93,7 +95,12 @@ async function refreshSNOBData(client) {
     break;
     case enumStatus.mcap:
       relevantInformation = mcap;
+      currentStatus = enumStatus.percentLocked;
+    break;
+    case enumStatus.percentLocked:
+      relevantInformation = locked;
       currentStatus = enumStatus.price;
+    break;
   }
   client.user.setPresence({
     status: 'online',

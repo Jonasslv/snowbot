@@ -12,6 +12,7 @@ var type = [];
 var snowglobesAPR = [];
 var snowglobesTVL = NaN;
 var snobCircSupply = 0;
+var percentLocked = 0;
 var harvestStatus = {
   lowGas:false,
   AVAXQty:0
@@ -169,9 +170,10 @@ async function loadSnobSupply(){
     const SNOWCONE_CONTRACT = new ethers.Contract(Constants.SNOWCONEContract, SNOWCONE_ABI, provider);
 
     const lockedSNOB = await SNOWCONE_CONTRACT.callStatic["supply"]({gasLimit:100000}) / 10 ** 18;
-    snobCircSupply = (await SNOB_CONTRACT.totalSupply() / 10 ** 18)-lockedSNOB;
+    snobCircSupply = (await SNOB_CONTRACT.totalSupply() / 10 ** 18);
+    percentLocked = lockedSNOB/snobCircSupply*100;
 
-    return snobCircSupply;
+    return {snobCircSupply,percentLocked};
 }
 
 function getSnobCircSupply(){
