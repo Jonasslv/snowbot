@@ -705,6 +705,8 @@ async function checkHarvesterJuice (client) {
   harvestStatus.AVAXQty = harvesterAVAX;
   if(harvesterAVAX < 5){
     harvestStatus.lowGas = true;
+  }else{
+      harvestStatus.lowGas = false;
   }
   return {harvestStatus,client};
 
