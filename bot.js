@@ -84,13 +84,13 @@ async function refreshSNOBData(client) {
   const locked = `${percentLocked.toFixed(1)}% SNOB Locked`;
   const filteredResult = lodash.filter(getTokenList(), { "symbol": "SNOB" });
   const orderedResult = lodash.orderBy(filteredResult, ["totalLiquidity", "tradeVolume"], ['desc', 'desc']);
-  const tokenPrice = (getAVAXValue() * orderedResult[0].derivedETH).toFixed(2);
+  const tokenPrice = getAVAXValue() * orderedResult[0].derivedETH;
   const mcap = `Total Mcap $${((tokenPrice * snobCircSupply)/1_000_000).toFixed(2)}M`;
 
   let relevantInformation;
   switch(currentStatus){
     case enumStatus.price:
-      relevantInformation = `SNOB $${tokenPrice}`;
+      relevantInformation = `SNOB $${tokenPrice.toFixed(3)}`;
       currentStatus = enumStatus.mcap;
     break;
     case enumStatus.mcap:
